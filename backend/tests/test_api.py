@@ -1,4 +1,6 @@
 from fastapi.testclient import TestClient
+from unittest.mock import AsyncMock, patch
+
 from app.main import app
 
 client = TestClient(app)
@@ -8,14 +10,19 @@ def test_read_root():
     assert response.status_code == 200
     assert response.json() == {"message": "Chatbot API is online"}
 
-def test_chat_endpoint_success():
+@patch("app.api.chat.chat_endpoint")
+def test_chat_endpoint_success(mock_generate):
     """Test a valid chat request returns the expected structure."""
+
+    mock_generate.return_value = "Hello! I am a mocked AI response."
+    
     payload = {
         "user_input": "Hello, bot!",
         "session_id": "test-session-123"
     }
     response = client.post("/api/v1/chat", json=payload)
     
+
     # Assertions
     assert response.status_code == 200
     data = response.json()
