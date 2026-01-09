@@ -1,10 +1,20 @@
 models:
   - type: main
     engine: openai
-    model: gpt-3.5-turbo # We will change this to your local vLLM later
-    
+    model: solidrust/Mistral-7B-Instruct-v0.3-AWQ # We will change this to your local vLLM later
+    parameters:
+          # This points to your local 4060 Ti vLLM instance
+          openai_api_base: "http://vllm:8000/v1"
+          openai_api_key: "local-machine"    
+          max_tokens: 512 
+          temperature: 0.1
+          stop: ["user:", "Assistant:", "\n\n"]
 instructions:
   - type: general
     content: |
       You are a helpful and polite AI assistant. 
       You stay on topic and provide concise answers.
+core:
+  parameters:
+    temperature: 0.1
+    max_tokens: 256
