@@ -1,0 +1,60 @@
+services:
+  
+  vllm:
+    image: vllm/vllm-openai:latest
+    container_name: chatbot-vllm
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    volumes:
+      - ~/.cache/huggingface:/root/.cache/huggingface
+    environment:
+      - HF_TOKEN=${HF_TOKEN}
+    ports:
+      - "8000:8000"
+    ipc: host
+    # Command updated for vLLM v0.13+ positional arguments
+    command: >
+      solidrust/Mistral-7B-Instruct-v0.3-AWQ
+      --quantization awq
+      --dtype half
+      --max-model-len 4096
+      --swap-space 1
+      --gpu-memory-utilization 0.7
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/v1/models"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+  api:
+      build:
+        context: ./backend
+        dockerfile: Dockerfile
+      container_name: chatbot-api
+      depends_on:
+        vllm:
+          condition: service_healthy
+      ports:
+        - "9000:8000" # Mapping to 8080 to avoid conflict with vLLM
+      environment:
+        - REDIS_URL=redis://redis:6379
+        - OPENAI_API_BASE=http://vllm:8000/v1
+        - OPENAI_API_KEY=not-needed
+        - HF_TOKEN=${HF_TOKEN}
+
+# Next.js Frontend
+  frontend:
+    build:
+      context: ./frontend/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - BACKEND_URL=http://api:9000
+    depends_on:
+      - api
+  
