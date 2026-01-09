@@ -23,6 +23,12 @@ wandb/
 logs/
 *.log
 
+# --- Next.js Build Output ---
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.next-env.d.ts
+
 # Large LLM Model Files
 # (Prevent committing actual weights/GGUF/AWQ files to Git)
 models/
