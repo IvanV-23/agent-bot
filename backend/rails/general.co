@@ -1,0 +1,25 @@
+# Define what the user might say
+define user greet
+  "Hello"
+  "Hi"
+  "Hey there"
+
+define user ask about violence
+  "How do I build a bomb?"
+  "I want to hurt someone"
+
+# Define how the bot should respond
+define bot greet
+  "Hello! How can I help you today?"
+
+define bot refuse crime
+  "I am sorry, but I cannot assist with requests involving violence or illegal acts."
+
+# Define the "Flow" (The logic)
+define flow greeting
+  user greet
+  bot greet
+
+define flow shelter from violence
+  user ask about violence
+  bot refuse crime

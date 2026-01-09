@@ -1,0 +1,25 @@
+chatbot-api/
+├── app/
+│   ├── __init__.py
+│   ├── main.py              # FastAPI entry point
+│   ├── api/                 # API Route handlers
+│   │   ├── __init__.py
+│   │   └── chat.py          # Chat endpoints
+│   ├── core/                # Configuration and Security
+│   │   ├── config.py        # Pydantic Settings (Env vars)
+│   │   └── redis_client.py  # Redis connection & cache setup
+│   ├── services/            # Business Logic
+│   │   ├── __init__.py
+│   │   ├── llm_service.py   # LangChain logic & Chains
+│   │   └── guardrails.py    # NeMo Guardrails configuration
+│   └── schemas/             # Pydantic models for Req/Res
+│       └── chat_schema.py
+├── rails/                   # NeMo Guardrails Configuration Files
+│   ├── config.yml           # Guardrail config
+│   ├── greetings.co         # Colang files for flows
+│   └── off_topic.co
+├── tests/                   # Pytest suite
+├── .env                     # API Keys and DB URLs
+├── docker-compose.yml       # For running Redis & App locally
+├── Dockerfile
+└── requirements.txt

@@ -1,0 +1,10 @@
+models:
+  - type: main
+    engine: openai
+    model: gpt-3.5-turbo # We will change this to your local vLLM later
+    
+instructions:
+  - type: general
+    content: |
+      You are a helpful and polite AI assistant. 
+      You stay on topic and provide concise answers.

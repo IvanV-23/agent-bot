@@ -1,0 +1,46 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment (Crucial)
+venv/
+.venv/
+env/
+ENV/
+
+# Environment Variables & Secrets
+.env
+.env.local
+.env.development
+.env.production
+.secrets
+
+# NeMo & vLLM Temporary Files
+nemo_experiments/
+wandb/
+.hydra/
+logs/
+*.log
+
+# Large LLM Model Files
+# (Prevent committing actual weights/GGUF/AWQ files to Git)
+models/
+*.gguf
+*.bin
+*.awq
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS specific files
+.DS_Store
+Thumbs.db
