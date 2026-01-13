@@ -45,7 +45,7 @@ services:
         - OPENAI_API_BASE=http://vllm:8000/v1
         - OPENAI_API_KEY=not-needed
         - HF_TOKEN=${HF_TOKEN}
-
+        - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY}
 # Next.js Frontend
   frontend:
     build:
