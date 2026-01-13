@@ -18,6 +18,7 @@ async def chat_endpoint(request: ChatRequest):
         # 2. Extract content from the NeMo response format
         return ChatResponse(
             response=result["content"],
+            tool=result.get("tool", "none"),
             source="guarded_llm"
         )
     except Exception as e:
