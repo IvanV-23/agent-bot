@@ -10,7 +10,7 @@ def test_read_root():
     assert response.status_code == 200
     assert response.json() == {"message": "Chatbot API is online"}
 
-@patch("app.api.chat.get_chat_response", new_callable=AsyncMock)
+@patch("app.api.chat.handle_chat_routing", new_callable=AsyncMock)
 def test_chat_endpoint_success(mock_generate):
     """Test a valid chat request returns the expected structure."""
 
