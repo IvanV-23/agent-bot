@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 tracer_provider = register(auto_instrument=True)
-LangChainInstrumentor().instrument()
+LangChainInstrumentor().instrument(tracer_provider=tracer_provider)
 
 @tool
 def get_weather(city: str) -> str:
