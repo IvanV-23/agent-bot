@@ -4,9 +4,14 @@ import json
 
 from langchain_core.tools import tool
 from langchain_community.utilities import OpenWeatherMapAPIWrapper
+from phoenix.otel import register
+from openinference.instrumentation.langchain import LangChainInstrumentor
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
+
+tracer_provider = register(auto_instrument=True)
+LangChainInstrumentor().instrument(tracer_provider=tracer_provider)
 
 @tool
 def get_weather(city: str) -> str:
