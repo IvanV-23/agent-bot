@@ -4,6 +4,8 @@ import json
 
 from langchain_core.tools import tool
 from langchain_community.utilities import OpenWeatherMapAPIWrapper
+from phoenix.otel import register
+from openinference.instrumentation.langchain import LangChainInstrumentor
 
 
 logger = logging.getLogger(__name__)
