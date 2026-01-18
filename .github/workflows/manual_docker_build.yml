@@ -13,11 +13,17 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write  
+      packages: write  # Crucial for pushing to ghcr.io
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      # This step fixes the "repository name must be lowercase" error
+      - name: Prepare Lowercase Owner
+        id: prep
+        run: |
+          echo "owner_lc=${GITHUB_REPOSITORY_OWNER,,}" >>${GITHUB_OUTPUT}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -32,11 +38,15 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          context: .
-          file: ./Dockerfile 
+          # 1. Change context to the backend folder
+          context: ./backend
+          
+          # 2. Point to the Dockerfile inside that folder
+          file: ./backend/Dockerfile
+          
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/chatbot-api:${{ github.event.inputs.image_tag }}
-            ghcr.io/${{ github.repository_owner }}/chatbot-api:latest
+            ghcr.io/${{ steps.prep.outputs.owner_lc }}/chatbot-api:${{ github.event.inputs.image_tag }}
+            ghcr.io/${{ steps.prep.outputs.owner_lc }}/chatbot-api:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max

@@ -5,6 +5,7 @@ models:
     parameters:
           # This points to your local 4060 Ti vLLM instance
           openai_api_base: "http://vllm:8000/v1"
+          #openai_api_base: "http://localhost:8000/v1"
           openai_api_key: "local-machine"    
           max_tokens: 512 
           temperature: 0.1

@@ -1,5 +1,6 @@
 import logging
 
+from opentelemetry import trace
 from sentence_transformers import SentenceTransformer, util
 import torch
 
@@ -8,7 +9,7 @@ from app.services.guardrails import get_chat_response
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
-
+tracer = trace.get_tracer(__name__)
 
 classifier_model = SentenceTransformer('all-MiniLM-L6-v2', device='cpu')
 
@@ -27,23 +28,34 @@ async def classify_query(user_input: str, threshold: float = 0.45) -> str:
     """
         Classify input and route to the appropriate answer.
     """
-    query_embedding = classifier_model.encode(user_input, convert_to_tensor=True)
-        
-    best_route = None
-    highest_score = 0
+    with tracer.start_as_current_span("classify_query") as span:
+        query_embedding = classifier_model.encode(user_input, convert_to_tensor=True)
+            
+        best_route = None
+        highest_score = 0
 
-    for route_name, embeddings in ROUTE_EMBEDDINGS.items():
-        # Calculate cosine similarity
-        cos_scores = util.cos_sim(query_embedding, embeddings)[0]
-        max_score = torch.max(cos_scores).item()
-        
-        if max_score > highest_score:
-            highest_score = max_score
-            best_route = route_name
+        for route_name, embeddings in ROUTE_EMBEDDINGS.items():
+            # Calculate cosine similarity
+            cos_scores = util.cos_sim(query_embedding, embeddings)[0]
+            max_score = torch.max(cos_scores).item()
+            
+            if max_score > highest_score:
+                highest_score = max_score
+                best_route = route_name
 
-    if highest_score > threshold:
-        return best_route
-    return "default_llm"
+        intent = best_route if highest_score > threshold else "default_llm"
+        span.set_attribute("input.value", user_input)
+        span.set_attribute("classification.score", highest_score)
+        span.set_attribute("classification.intent", intent)
+
+        span.add_event("classification_completed", attributes={
+                    "intent": intent,
+                    "score": highest_score
+                })
+
+        if highest_score > threshold:
+            return best_route
+        return "default_llm"
 
 async def handle_chat_routing(user_input: str):
     
@@ -62,4 +74,6 @@ async def handle_chat_routing(user_input: str):
             return {"type": "tool_result", "content": result, "tool": intent}
             
     result = await get_chat_response(user_input)
+
+    return {"type": "llm_response", "content": result, "tool": "none"}
     

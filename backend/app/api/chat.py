@@ -14,10 +14,18 @@ async def chat_endpoint(request: ChatRequest):
     try:
         # 1. Call the Guardrails + LLM logic
         result = await handle_chat_routing(request.user_input)
+        logger.debug(f"Chat response: {result}")
+        # Extract the text content
+        raw_content = result["content"]
         
-        # 2. Extract content from the NeMo response format
+        # If raw_content is a dict (from NeMo), get the "content" key
+        if isinstance(raw_content, dict):
+            final_text = raw_content.get("content", "")
+        else:
+            final_text = str(raw_content)
+
         return ChatResponse(
-            response=result["content"],
+            response=final_text,
             tool=result.get("tool", "none"),
             source="guarded_llm"
         )
