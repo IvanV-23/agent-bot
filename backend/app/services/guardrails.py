@@ -1,6 +1,7 @@
 # app/services/guardrails.py
 from nemoguardrails import LLMRails, RailsConfig
 
+from app.core import globals
 
 # Global variable to hold the rails instance
 rails = None
@@ -17,10 +18,11 @@ async def get_chat_response(message: str):
     
     # NeMo Guardrails uses its internal logic (Colang) to decide
     # if it should call the LLM or return a canned response.
-    response = await rails.generate_async(messages=[{
-        "role": "user", 
-        "content": message
-    }])
+    globals.history.append({"role": "user", "content": message})
+
+    response = await rails.generate_async(messages=list(globals.history))
+
+    globals.history.append(response)
     
     return response
 
@@ -38,9 +40,10 @@ async def product_expert_response(product_data: dict):
         
         Promote this product and explain its value.
     """
-    response = await rails.generate_async(messages=[{
-        "role": "user", 
-        "content": prompt
-    }])
-    # 3. Use the internal 'generate' tool of NeMo to speak
+    globals.history.append({"role": "user", "content": prompt})
+
+    response = await rails.generate_async(messages=list(globals.history))
+
+    globals.history.append(response)
+    
     return response
