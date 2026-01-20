@@ -13,7 +13,7 @@ services:
     volumes:
       - ~/.cache/huggingface:/root/.cache/huggingface
     environment:
-      - HF_TOKEN=${HF_TOKEN}
+      - HF_TOKEN={{ secrets.HF_TOKEN }}
     ports:
       - "8000:8000"
     ipc: host
@@ -31,21 +31,29 @@ services:
       timeout: 10s
       retries: 10
   api:
-      build:
-        context: ./backend
-        dockerfile: Dockerfile
+      #build:
+      #  context: ./backend
+      #  dockerfile: Dockerfile
+      pull_policy: always
+      image: ghcr.io/ivanv-23/chatbot-api:latest
       container_name: chatbot-api
       depends_on:
         vllm:
           condition: service_healthy
       ports:
         - "9000:8000" # Mapping to 8080 to avoid conflict with vLLM
+      volumes:
+      - "D:/repos/chatbot/db/qdrant_storage:/app/qdrant_storage"
       environment:
         - REDIS_URL=redis://redis:6379
         - OPENAI_API_BASE=http://vllm:8000/v1
         - OPENAI_API_KEY=not-needed
-        - HF_TOKEN=${HF_TOKEN}
-        - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY}
+        - HF_TOKEN={{ secrets.HF_TOKEN }}
+        - OPENWEATHER_API_KEY={{ secrets.OPENWEATHER_API_KEY }}
+        - PHOENIX_COLLECTOR_ENDPOINT=http://phoenix:4317
+        - PHOENIX_PROJECT_NAME=ivans_bot
+        - QDRANT_PATH=/app/qdrant_storage
+      
 # Next.js Frontend
   frontend:
     build:
@@ -57,4 +65,29 @@ services:
       - BACKEND_URL=http://api:9000
     depends_on:
       - api
-  
+
+  phoenix:
+      image: arizephoenix/phoenix:latest
+      container_name: phoenix
+      ports:
+        - "6006:6006" # Phoenix UI
+        - "4317:4317" # OTLP gRPC collector
+        - "4318:4318" # OTLP HTTP collector
+      environment:
+        - PHOENIX_SQL_DATABASE_URL={{ secrets.PHOENIX_SQL_DATABASE_URL }}
+      depends_on:
+        db:
+          condition: service_healthy
+
+  db:
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=phoenix
+      - POSTGRES_PASSWORD=phoenix
+      - POSTGRES_DB=phoenix
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U phoenix"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
