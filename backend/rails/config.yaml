@@ -7,9 +7,10 @@ models:
           openai_api_base: "http://vllm:8000/v1"
           #openai_api_base: "http://localhost:8000/v1"
           openai_api_key: "local-machine"    
-          max_tokens: 512 
+          max_tokens: 1056 
           temperature: 0.1
           stop: ["user:", "Assistant:", "\n\n"]
+
 instructions:
   - type: general
     content: |
