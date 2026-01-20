@@ -23,3 +23,24 @@ async def get_chat_response(message: str):
     }])
     
     return response
+
+
+async def product_expert_response(product_data: dict):
+    if rails is None:
+        load_rails()
+    
+    # 2. Define the Sales Persona Prompt
+    prompt = f"""
+        You are a Sales Expert. Use the following data:
+        Product: {product_data['name']}
+        Price: {product_data['price']}
+        Specs: {product_data['description']}
+        
+        Promote this product and explain its value.
+    """
+    response = await rails.generate_async(messages=[{
+        "role": "user", 
+        "content": prompt
+    }])
+    # 3. Use the internal 'generate' tool of NeMo to speak
+    return response

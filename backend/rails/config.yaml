@@ -1,7 +1,7 @@
 models:
   - type: main
     engine: openai
-    model: solidrust/Mistral-7B-Instruct-v0.3-AWQ # We will change this to your local vLLM later
+    model: solidrust/Mistral-7B-Instruct-v0.3-AWQ 
     parameters:
           # This points to your local 4060 Ti vLLM instance
           openai_api_base: "http://vllm:8000/v1"

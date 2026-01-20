@@ -50,5 +50,6 @@ htmlcov/
 # OS specific files
 .DS_Store
 Thumbs.db
-
+#Quadrant Files
+qdrant_storage/
 docker-compose.yaml

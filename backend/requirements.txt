@@ -12,3 +12,5 @@ arize-phoenix == 12.29.0
 opentelemetry-sdk == 1.39.1
 opentelemetry-exporter-otlp == 1.39.1
 openinference-instrumentation-langchain == 0.1.58
+qdrant-client == 1.16.2
+

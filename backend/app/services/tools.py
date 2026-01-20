@@ -7,6 +7,7 @@ from langchain_community.utilities import OpenWeatherMapAPIWrapper
 from phoenix.otel import register
 from openinference.instrumentation.langchain import LangChainInstrumentor
 
+from app.services.search_products import search_products
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -40,8 +41,18 @@ def get_calendar(principal: float, rate: float, years: int) -> str:
     amount = principal * (1 + (rate / 100)) ** years
     return f"After {years} years, your investment will be worth {amount:.2f}."
 
+@tool
+async def promote_product(user_input: str) -> dict:
+    """Simulates buying a product."""
+    product = await search_products(user_input)
+    return {"description": product.get("description"),"name":product.get("name"), "price": product.get("price")} if product else {"description": "Nothing available to sell"}
+
 # Create a dictionary for easy access in the router
 TOOLS = {
     "weather": get_weather,
-    "calendar": get_calendar
+    "calendar": get_calendar,
+    "purchase": promote_product
 }
+
+
+

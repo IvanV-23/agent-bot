@@ -5,7 +5,7 @@ from sentence_transformers import SentenceTransformer, util
 import torch
 
 from app.services.tools import TOOLS
-from app.services.guardrails import get_chat_response
+from app.services.guardrails import get_chat_response, product_expert_response
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -16,7 +16,17 @@ classifier_model = SentenceTransformer('all-MiniLM-L6-v2', device='cpu')
 ROUTES = {
     "weather": ["what is the weather like", "is it raining outside", "temperature today"],
     "time": ["calculate this", "what is the square root", "sum of these numbers"],
-    "greeting": ["hello", "hi there", "good morning", "hey"]
+    "greeting": ["hello", "hi there", "good morning", "hey"],
+    "purchase": [
+        "I want to buy this product",
+        "Add this to my cart",
+        "Proceed to checkout",
+        "I'm ready to pay for the pump",
+        "Purchase the solar panel now",
+        "Place an order for this item",
+        "How do I complete the transaction?",
+        "Buy it now"
+    ]
 }
 
 ROUTE_EMBEDDINGS = {
@@ -72,6 +82,13 @@ async def handle_chat_routing(user_input: str):
             city = user_input.split("in")[-1].strip() or "London"
             result = tool.invoke({"city": city})
             return {"type": "tool_result", "content": result, "tool": intent}
+        
+        if intent == "purchase":
+            result = await tool.ainvoke({"user_input": user_input})
+
+            response = await product_expert_response(result)
+
+            return {"type": "tool_result", "content": response, "tool": intent}
             
     result = await get_chat_response(user_input)
 

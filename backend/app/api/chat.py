@@ -1,8 +1,8 @@
 import logging
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.schemas.chat_schema import ChatRequest, ChatResponse
-from app.services.guardrails import get_chat_response
+from app.schemas.chat_schema import ChatRequest, ChatResponse, SearchRequest
+from app.services.search_products import search_products
 from app.services.agent_router import handle_chat_routing
 
 logger = logging.getLogger(__name__)
@@ -32,3 +32,19 @@ async def chat_endpoint(request: ChatRequest):
     except Exception as e:
         logger.error(f"Error in chat_endpoint: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Error processing chat: {str(e)}")
+
+
+@router.post("/api/v1/search")
+async def search_endpoint(request: SearchRequest):
+    product = await search_products(request.user_input)
+    
+    if product is None:
+        # This prevents the ResponseValidationError by stopping the flow
+        # and returning a proper 404 error to the client.
+        raise HTTPException(
+            status_code=404, 
+            detail="No product found matching that description."
+        )
+    
+    return product
+        
