@@ -53,3 +53,4 @@ Thumbs.db
 #Quadrant Files
 qdrant_storage/
 docker-compose.yaml
+docker-compose_1.yaml

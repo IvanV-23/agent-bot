@@ -13,4 +13,4 @@ opentelemetry-sdk == 1.39.1
 opentelemetry-exporter-otlp == 1.39.1
 openinference-instrumentation-langchain == 0.1.58
 qdrant-client == 1.16.2
-
+jsonschema == 4.26.0

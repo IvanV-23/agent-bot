@@ -45,7 +45,22 @@ def get_calendar(principal: float, rate: float, years: int) -> str:
 async def promote_product(user_input: str) -> dict:
     """Simulates buying a product."""
     product = await search_products(user_input)
-    return {"description": product.get("description"),"name":product.get("name"), "price": product.get("price")} if product else {"description": "Nothing available to sell"}
+
+    if not product:
+        return {"description": "Nothing available to sell"}
+    
+    return {
+        "name": product.get("name"),
+        "price": product.get("price"),
+        "description": product.get("description"),
+        "sales_context": (
+            f"The customer is interested in {product.get('name')}. "
+            "You can now use the 'generate_dynamic_tool' to create custom "
+            "ROI calculators, bulk discount tables, or shipping estimators for them."
+        )
+    }
+
+    #return {"description": product.get("description"),"name":product.get("name"), "price": product.get("price")} if product else {"description": "Nothing available to sell"}
 
 # Create a dictionary for easy access in the router
 TOOLS = {

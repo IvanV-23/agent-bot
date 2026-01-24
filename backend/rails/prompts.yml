@@ -1,0 +1,9 @@
+prompts:
+  - task: generate_user_intent
+    content: |
+      Your task is to extract the user's intent. 
+      If the user is asking about a product or wanting to buy, the intent is "product_inquiry".
+      
+      User message: "{{ last_user_message }}"
+      User intent:
+      

@@ -6,6 +6,7 @@ import torch
 
 from app.services.tools import TOOLS
 from app.services.guardrails import get_chat_response, product_expert_response
+from app.services.purchase_router import purchase_router
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -86,9 +87,11 @@ async def handle_chat_routing(user_input: str):
         if intent == "purchase":
             result = await tool.ainvoke({"user_input": user_input})
 
-            response = await product_expert_response(result)
+            routing_result = await purchase_router(user_input, result)
 
-            return {"type": "tool_result", "content": response, "tool": intent}
+            #response = await product_expert_response(result)
+
+            return {"type": "tool_result", "content": routing_result, "tool": intent}
             
     result = await get_chat_response(user_input)
 

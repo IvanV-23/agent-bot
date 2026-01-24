@@ -1,0 +1,13 @@
+define flow validate dynamic tool
+  user ask to create tool
+  $code = execute generate_tool_code
+  
+  # This calls the Python function we are about to write
+  $is_safe = execute check_code_safety(code=$code)
+  
+  if not $is_safe
+    bot "Security Alert: The generated tool attempted to use restricted system commands. Access denied."
+    stop
+  else
+    execute register_dynamic_tool(code=$code)
+    bot "Tool generated and registered successfully."

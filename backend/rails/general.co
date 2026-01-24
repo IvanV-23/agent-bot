@@ -27,3 +27,16 @@ define flow greeting
 define flow shelter from violence
   user ask about violence
   bot refuse crime
+
+define flow handle purchase
+  user intent purchase
+  
+  # Check if we have product context
+  if $product_name
+    bot inform about product
+    bot ask "I can calculate the ROI or bulk pricing for the $product_name. Would you like me to do that?"
+  else
+    bot "Which pump are you interested in?"
+
+define bot inform about product
+  "The $product_name is available for ${$product_price}. It features high-pressure hydraulic capabilities and a stainless steel casing."
