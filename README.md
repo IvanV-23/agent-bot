@@ -9,4 +9,4 @@ This project pretends to add new versions of different functionalities generated
 ## RELEASES
 - v0.1 Basic ChatBot with local LLM inference, langchain and Nemoguardrails
 ## VIDEOS
-https://www.youtube.com/watch?v=s_C1exg2LzM&list=PLRujWRpOsUpaRokWUQKiGYSCura64luwf&index=2
+https://youtu.be/KAQy9teRV78?si=nY4zQ6Zhl7qag8N7
